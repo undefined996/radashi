@@ -11,9 +11,9 @@ Creates a function that executes multiple functions in the same order as they ar
 ```ts twoslash
 import * as _ from 'radashi'
 
-const func1 = vi.fn((a, b) => a + b)
-const func2 = vi.fn(async n => n * 2)
-const func3 = vi.fn(async n => `Your Value is ${n}`)
+const func1 = (a: number, b: number) => a + b
+const func2 = async (n: number) => n * 2
+const func3 = async (n: number) => `Your Value is ${n}`
 
 const chained = _.promiseChain(func1, func2, func3)
 

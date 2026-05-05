@@ -91,8 +91,10 @@ const acquirePromise = semaphore.acquire({ signal: controller.signal })
 // Abort the acquisition before it can complete
 controller.abort()
 
-// The acquirePromise will now reject
-await expect(acquirePromise).rejects.toThrow('This operation was aborted')
+// The acquirePromise will now reject.
+await acquirePromise.catch(error => {
+  console.log(error.message) // "This operation was aborted"
+})
 ```
 
 You can reject all pending and future acquisition requests by calling `semaphore.reject()`. All promises returned by pending and future `acquire` calls will reject with the provided error.
@@ -108,9 +110,13 @@ const acquirePromise = semaphore.acquire() // This will block
 const rejectionError = new Error('Operation cancelled')
 semaphore.reject(rejectionError)
 
-// The acquirePromise will now reject with the specified error
-await expect(acquirePromise).rejects.toThrow('Operation cancelled')
+// The acquirePromise will now reject with the specified error.
+await acquirePromise.catch(error => {
+  console.log(error.message) // "Operation cancelled"
+})
 
-// Future acquisition requests will also be rejected
-await expect(() => semaphore.acquire()).rejects.toThrow('Operation cancelled')
+// Future acquisition requests will also be rejected.
+await semaphore.acquire().catch(error => {
+  console.log(error.message) // "Operation cancelled"
+})
 ```

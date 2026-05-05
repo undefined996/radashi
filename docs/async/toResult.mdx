@@ -27,6 +27,8 @@ const badResult = await toResult(bad())
 If the given promise throws a non-Error value, it will be rethrown. This ensures the `Result` always contains an `Error` value or undefined.
 
 ```ts twoslash
+import { toResult } from 'radashi'
+
 // This won't catch the rejected promise, because it was
 // rejected with a string, not an Error.
 const res = await toResult(Promise.reject('test error'))
@@ -37,6 +39,8 @@ const res = await toResult(Promise.reject('test error'))
 This function won't catch synchronous errors. Only rejected promises are converted to an `Err`.
 
 ```ts twoslash
+import { toResult } from 'radashi'
+
 function bad() {
   if (Math.random() > 0.5) {
     // ⚠️ This error won't be caught by `toResult`. To fix this, add

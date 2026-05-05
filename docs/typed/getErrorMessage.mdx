@@ -21,6 +21,8 @@ _.getErrorMessage(null) // => 'Unknown error.'
 Empty strings and `Error` objects with empty messages return the fallback message.
 
 ```ts twoslash
+import * as _ from 'radashi'
+
 _.getErrorMessage(new Error()) // => 'Unknown error.'
 _.getErrorMessage('') // => 'Unknown error.'
 ```

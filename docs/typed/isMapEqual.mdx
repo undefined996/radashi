@@ -12,19 +12,19 @@ deeply equal.
 ```ts twoslash
 import * as _ from 'radashi'
 
-const left = new Map([
+const left = new Map<string, number | string[]>([
   ['id', 1],
   ['tags', ['radashi', 'bench']],
 ])
 
-const right = new Map([
+const right = new Map<string, number | string[]>([
   ['tags', ['radashi', 'bench']],
   ['id', 1],
 ])
 
 _.isMapEqual(left, right) // => true
 
-const different = new Map([
+const different = new Map<string, number | string[]>([
   ['id', 1],
   ['tags', ['radashi']],
 ])

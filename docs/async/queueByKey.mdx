@@ -86,7 +86,9 @@ const queuedRiskyOp = _.queueByKey(riskyOperation, id => id)
 try {
   await queuedRiskyOp('user1', true) // This will throw
 } catch (error) {
-  console.log(error.message) // "Operation failed for user1"
+  if (error instanceof Error) {
+    console.log(error.message) // "Operation failed for user1"
+  }
 }
 
 // Queue continues normally
