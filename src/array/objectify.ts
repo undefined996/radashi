@@ -20,7 +20,8 @@
 export function objectify<T, Key extends string | number | symbol, Value = T>(
   array: readonly T[],
   getKey: (item: T, index: number) => Key,
-  getValue: (item: T, index: number) => Value = item => item as unknown as Value,
+  getValue: (item: T, index: number) => Value = item =>
+    item as unknown as Value,
 ): Record<Key, Value> {
   return array.reduce(
     (acc, item, i) => {

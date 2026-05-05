@@ -1,5 +1,5 @@
-import * as esbuild from 'esbuild'
 import { fileURLToPath } from 'node:url'
+import * as esbuild from 'esbuild'
 
 const packageDir = fileURLToPath(new URL('..', import.meta.url))
 const radashiDistPath = fileURLToPath(

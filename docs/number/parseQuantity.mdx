@@ -65,7 +65,10 @@ export type DistanceShortUnit = keyof typeof DistanceParser.shortUnits
 
 export type DistanceString = QuantityString<DistanceUnit, DistanceShortUnit>
 
-export class DistanceParser extends QuantityParser<DistanceUnit, DistanceShortUnit> {
+export class DistanceParser extends QuantityParser<
+  DistanceUnit,
+  DistanceShortUnit
+> {
   constructor() {
     super({
       units: DistanceParser.units,

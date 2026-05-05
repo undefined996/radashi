@@ -93,7 +93,7 @@ type AppDefaults = { theme: 'light'; lang: 'en' }
 
 function getConfig(
   userPreferences: UserConfig,
-  defaults: AppDefaults
+  defaults: AppDefaults,
 ): MergeOptions<AppDefaults, UserConfig> {
   return _.mergeOptions(defaults, userPreferences)
   // The return type covers both defaults-only and merged config branches.
