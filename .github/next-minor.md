@@ -4,12 +4,12 @@ The `####` headline should be short and descriptive of the new functionality. In
 
 ## New Functions
 
-####
-
-## New Features
-
-### Add `mergeOptions` function
+#### Add `mergeOptions` function
 
 https://github.com/radashi-org/radashi/pull/442
 
-####
+## New Features
+
+#### Improve `sort` return type when sorting a tuple
+
+https://github.com/radashi-org/radashi/pull/421
