@@ -12,7 +12,7 @@ aliases:
 
 Merges two option objects into a new object with superior type inference compared to `Object.assign`. The key advantage is proper handling of `undefined` values and optional properties.
 
-```ts
+```ts twoslash
 import * as _ from 'radashi'
 
 const defaults = { port: 3000, host: 'localhost' }
@@ -26,7 +26,7 @@ _.mergeOptions(defaults, userConfig)
 
 When either argument is `undefined`, the function returns the other argument with proper typing. When both are `undefined`, the result is correctly typed as `undefined`.
 
-```ts
+```ts twoslash
 import * as _ from 'radashi'
 
 // First argument undefined → returns second
@@ -47,7 +47,7 @@ _.mergeOptions(undefined, undefined)
 The main advantage of `mergeOptions` over `Object.assign` is how it handles optional objects (`T | undefined`).
 With `Object.assign`, you often have to use workarounds that result in complex intersection types.
 
-```ts
+```ts twoslash
 import * as _ from 'radashi'
 
 type Config = { x: number; y?: string } | undefined
@@ -84,7 +84,7 @@ The type of `good` clearly shows all possible runtime states, making it easier t
 
 This pattern is common when merging user configuration with defaults:
 
-```ts
+```ts twoslash
 import * as _ from 'radashi'
 import type { MergeOptions } from 'radashi'
 
@@ -111,7 +111,7 @@ getConfig({ theme: 'dark' }, { theme: 'light', lang: 'en' })
 
 Works seamlessly with class instances, merging their properties into a plain object.
 
-```ts
+```ts twoslash
 import * as _ from 'radashi'
 
 class Character {
