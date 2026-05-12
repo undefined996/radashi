@@ -41,5 +41,21 @@ jobs:
 
       - name: Run benchmarks
         if: steps.checkout.outputs.has_changes == 'true'
+        env:
+          BENCHMARK_COMMENT_PATH: benchmark-results/comment.md
         run: |
           node scripts/run bench-pr ${{ github.base_ref }} ${{ github.event.number }} ${{ github.event.pull_request.head.repo.html_url }}/blob/${{ github.event.pull_request.head.sha }}
+
+      - name: Write empty benchmark results
+        if: steps.checkout.outputs.has_changes != 'true'
+        run: |
+          mkdir -p benchmark-results
+          : > benchmark-results/comment.md
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        with:
+          name: benchmark-results
+          path: benchmark-results/comment.md
+          if-no-files-found: error
+          retention-days: 1

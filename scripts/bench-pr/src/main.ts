@@ -1,13 +1,24 @@
 import fs from 'node:fs/promises'
-import { Octokit } from '@octokit/rest'
-import { benchAddedFiles } from '@radashi-org/benchmarks/benchAddedFiles.ts'
-import { benchChangedFiles } from '@radashi-org/benchmarks/benchChangedFiles.ts'
-import { execa } from 'execa'
+import path from 'node:path'
 
-main().catch(console.error)
+main().catch(error => {
+  console.error(error)
+  process.exit(1)
+})
 
 async function main() {
+  if (process.argv[2] === 'comment') {
+    await commentOnPullRequest(process.argv.slice(3))
+    return
+  }
+
   const { baseRef, prNumber, prBlobURL } = parseArgv(process.argv.slice(2))
+  const [{ benchAddedFiles }, { benchChangedFiles }, { execa }] =
+    await Promise.all([
+      import('@radashi-org/benchmarks/benchAddedFiles.ts'),
+      import('@radashi-org/benchmarks/benchChangedFiles.ts'),
+      import('execa'),
+    ])
 
   // Run the benchmarks
   const addedFiles = await benchAddedFiles()
@@ -18,6 +29,7 @@ async function main() {
 
   if (addedFiles.length === 0 && changedFiles.length === 0) {
     console.log('No benchmarks were found')
+    await writeBenchmarkOutput('')
     return
   }
 
@@ -91,10 +103,53 @@ async function main() {
 
   const radashiBotToken = process.env.RADASHI_BOT_TOKEN
   if (!radashiBotToken) {
-    await writeSummary(commentBody)
+    await writeBenchmarkOutput(commentBody)
     return
   }
 
+  await postBenchmarkComment({
+    prNumber,
+    commentBody,
+    radashiBotToken,
+  })
+}
+
+async function commentOnPullRequest(argv: string[]) {
+  const [prNumber, commentPath] = argv
+  if (!prNumber || Number.isNaN(+prNumber) || !commentPath) {
+    throw new Error('Expected arguments: comment <pr-number> <comment-path>')
+  }
+
+  const commentBody = await fs.readFile(commentPath, 'utf8')
+  if (!commentBody.trim()) {
+    console.log('No benchmark results were produced')
+    return
+  }
+
+  const radashiBotToken = process.env.RADASHI_BOT_TOKEN
+  if (!radashiBotToken) {
+    throw new Error(
+      'RADASHI_BOT_TOKEN is required to comment on benchmark results',
+    )
+  }
+
+  await postBenchmarkComment({
+    prNumber: +prNumber,
+    commentBody,
+    radashiBotToken,
+  })
+}
+
+async function postBenchmarkComment({
+  prNumber,
+  commentBody,
+  radashiBotToken,
+}: {
+  prNumber: number
+  commentBody: string
+  radashiBotToken: string
+}) {
+  const { Octokit } = await import('@octokit/rest')
   const octokit = new Octokit({
     auth: radashiBotToken,
   })
@@ -165,15 +220,26 @@ function formatChange(change: number) {
   return `${change >= 0 ? '🚀' : '🐢'} ${change >= 0 ? '+' : ''}${formatNumber(change)}%`
 }
 
-async function writeSummary(markdown: string) {
+async function writeBenchmarkOutput(markdown: string) {
+  const commentPath = process.env.BENCHMARK_COMMENT_PATH
+  if (commentPath) {
+    await fs.mkdir(path.dirname(commentPath), { recursive: true })
+    await fs.writeFile(commentPath, markdown)
+    console.log('Benchmark results written to', commentPath)
+  }
+
   const summaryPath = process.env.GITHUB_STEP_SUMMARY
   if (!summaryPath) {
-    console.log(markdown)
+    if (markdown) {
+      console.log(markdown)
+    }
     return
   }
 
-  await fs.appendFile(summaryPath, markdown + '\n')
-  console.log('Benchmark results written to job summary')
+  if (markdown) {
+    await fs.appendFile(summaryPath, markdown + '\n')
+    console.log('Benchmark results written to job summary')
+  }
 }
 
 function parseArgv(argv: string[]) {
