@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [radashi@12.9.1] - 2026-05-12
+### Details
+#### <!-- 06 -->Fixed
+
+- **(ci)** Disable cache in privileged workflows in [cc910be](https://github.com/radashi-org/radashi/commit/cc910be86e97b00ef4c1b679d33f47f671af14cc)
+- **(ci)** Scope publish oidc permission in [0b7c94b](https://github.com/radashi-org/radashi/commit/0b7c94b5cd655ec6d1804dc7a141e247ea45b53c)
+- **(ci)** Drop unused npm token from publish in [6a86290](https://github.com/radashi-org/radashi/commit/6a86290b5360b4a0d16b239a3f8783a371d7705f)
+- **(ci)** Run pr benchmarks without secrets in [d4020ff](https://github.com/radashi-org/radashi/commit/d4020ff35f917df49570f8bb95ff91e8afb05077)
+- **(ci)** Ensure git-cliff uses GITHUB_TOKEN if token is undefined in [6d0bda0](https://github.com/radashi-org/radashi/commit/6d0bda03c28aa0e0ff6d3a4c6c52899960a86b5e)
+- **(ci)** Restore benchmark bot comments safely in [74a9931](https://github.com/radashi-org/radashi/commit/74a9931faca9a5909bc22aad592e9baafaaf29fe)
+
 ## [radashi@12.9.0] - 2026-05-05
 ### Details
 #### <!-- 03 -->Added
@@ -296,6 +307,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Avoid inferring `memo` return type from `key` option in [7b4656e](https://github.com/radashi-org/radashi/commit/7b4656ef5ccc4ad6a06ab598407a92557594fcd6)
 - Allow readonly array in `omit` function in [a88fa1b](https://github.com/radashi-org/radashi/commit/a88fa1b0d2014b991830753400b9d1705ca0cd29)
 
+
+[radashi@12.9.1]: https://github.com/radashi-org/radashi/compare/v12.9.0..v12.9.1
 
 [radashi@12.9.0]: https://github.com/radashi-org/radashi/compare/v12.8.1..v12.9.0
 
