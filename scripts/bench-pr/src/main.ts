@@ -1,16 +1,12 @@
+import fs from 'node:fs/promises'
 import { Octokit } from '@octokit/rest'
 import { benchAddedFiles } from '@radashi-org/benchmarks/benchAddedFiles.ts'
 import { benchChangedFiles } from '@radashi-org/benchmarks/benchChangedFiles.ts'
-import { verifyEnvVars } from '@radashi-org/common/verifyEnvVars.ts'
 import { execa } from 'execa'
 
 main().catch(console.error)
 
 async function main() {
-  const { radashiBotToken } = verifyEnvVars({
-    radashiBotToken: 'RADASHI_BOT_TOKEN',
-  })
-
   const { baseRef, prNumber, prBlobURL } = parseArgv(process.argv.slice(2))
 
   // Run the benchmarks
@@ -93,6 +89,12 @@ async function main() {
   commentBody +=
     "\n*Performance regressions of 30% or more should be investigated, unless they were anticipated. Smaller regressions may be due to normal variability, as we don't use dedicated CI infrastructure.*"
 
+  const radashiBotToken = process.env.RADASHI_BOT_TOKEN
+  if (!radashiBotToken) {
+    await writeSummary(commentBody)
+    return
+  }
+
   const octokit = new Octokit({
     auth: radashiBotToken,
   })
@@ -161,6 +163,17 @@ function formatNumber(n: number) {
 
 function formatChange(change: number) {
   return `${change >= 0 ? '🚀' : '🐢'} ${change >= 0 ? '+' : ''}${formatNumber(change)}%`
+}
+
+async function writeSummary(markdown: string) {
+  const summaryPath = process.env.GITHUB_STEP_SUMMARY
+  if (!summaryPath) {
+    console.log(markdown)
+    return
+  }
+
+  await fs.appendFile(summaryPath, markdown + '\n')
+  console.log('Benchmark results written to job summary')
 }
 
 function parseArgv(argv: string[]) {

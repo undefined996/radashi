@@ -1,10 +1,13 @@
 name: Benchmark Pull Request
 
 on:
-  pull_request_target:
+  pull_request:
     branches: [main, next]
     paths:
       - 'src/**/*.ts'
+
+permissions:
+  contents: read
 
 jobs:
   benchmark:
@@ -14,7 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
+          persist-credentials: false
       - name: Install pnpm
         uses: pnpm/action-setup@v4
       - name: Install Node.js
@@ -29,14 +34,12 @@ jobs:
           node scripts/run checkout-pr src benchmarks
 
           if [ -z "$(git status --porcelain)" ]; then
-            echo '::set-output name=has_changes::false'
+            echo 'has_changes=false' >> "$GITHUB_OUTPUT"
           else
-            echo '::set-output name=has_changes::true'
+            echo 'has_changes=true' >> "$GITHUB_OUTPUT"
           fi
 
       - name: Run benchmarks
         if: steps.checkout.outputs.has_changes == 'true'
-        env:
-          RADASHI_BOT_TOKEN: ${{ secrets.RADASHI_BOT_TOKEN }}
         run: |
           node scripts/run bench-pr ${{ github.base_ref }} ${{ github.event.number }} ${{ github.event.pull_request.head.repo.html_url }}/blob/${{ github.event.pull_request.head.sha }}
