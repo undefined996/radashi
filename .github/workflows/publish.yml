@@ -83,7 +83,6 @@ jobs:
       - name: Publish
         env:
           GIT_CLIFF_PAT: ${{ secrets.GIT_CLIFF_PAT }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           RADASHI_BOT_TOKEN: ${{ secrets.RADASHI_BOT_TOKEN }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
