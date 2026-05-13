@@ -46,7 +46,7 @@ export async function publishVersion(args: {
     token: args.gitCliffToken,
   })
 
-  if (stableVersion === newVersion) {
+  if (!newVersion || stableVersion === newVersion) {
     log('🚫 No version bump detected')
     process.exit(1)
   }
