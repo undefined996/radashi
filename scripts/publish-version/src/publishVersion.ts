@@ -188,6 +188,11 @@ export async function publishVersion(args: {
     committedFiles.push(releaseNotesFile)
   }
 
+  log('Setting package.json version')
+  await execa('npm', ['version', newVersion, '--no-git-tag-version'], {
+    stdio: 'inherit',
+  })
+
   // Commit files
   if (!args.tag) {
     // Only commit the changed version in package.json if it's a
@@ -260,11 +265,6 @@ export async function publishVersion(args: {
   } else {
     log('Would have tracked version in database, but --no-push was set')
   }
-
-  log('Setting package.json version')
-  await execa('npm', ['version', newVersion, '--no-git-tag-version'], {
-    stdio: 'inherit',
-  })
 
   const npmPublishArgs = ['publish', '--provenance', '--ignore-scripts']
 
