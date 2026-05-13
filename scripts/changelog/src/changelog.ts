@@ -56,8 +56,54 @@ export async function generateChangelog(
 }
 
 export async function inferNextVersion(options: { token?: string } = {}) {
-  const { stdout } = await execa(gitCliffBin, ['--bumped-version'], {
+  const latestTag = await getLatestReleaseTag()
+  const gitCliffArgs = ['--bumped-version']
+  for (const sha of await getCiScopedCommitShas(latestTag)) {
+    gitCliffArgs.push('--skip-commit', sha)
+  }
+
+  const { stdout } = await execa(gitCliffBin, gitCliffArgs, {
     env: { GITHUB_TOKEN: options.token },
   })
-  return stdout.replace(/^v/, '')
+  return (stdout || latestTag || '').replace(/^v/, '')
+}
+
+async function getCiScopedCommitShas(latestTag?: string) {
+  const logRange = latestTag ? `${latestTag}..HEAD` : 'HEAD'
+  const { stdout } = await execa('git', ['log', '--format=%H%x00%s', logRange])
+
+  return stdout.split('\n').flatMap(line => {
+    const separator = line.indexOf('\0')
+    if (separator === -1) {
+      return []
+    }
+
+    const sha = line.slice(0, separator)
+    const subject = line.slice(separator + 1)
+    return /^[a-z]+\(ci\)!?:/.test(subject) ? [sha] : []
+  })
+}
+
+async function getLatestReleaseTag() {
+  const { stdout } = await execa(
+    'git',
+    [
+      'describe',
+      '--tags',
+      '--abbrev=0',
+      '--match',
+      'v[0-9]*',
+      '--exclude',
+      '*alpha*',
+      '--exclude',
+      '*beta*',
+      '--exclude',
+      '*rc*',
+    ],
+    {
+      reject: false,
+    },
+  )
+
+  return stdout || undefined
 }
